@@ -63,6 +63,7 @@ cs_STEP_TO_PROG =      cs/$($(1)).exe
 erlang_STEP_TO_PROG =  erlang/$($(1))
 factor_STEP_TO_PROG =  factor/src/$($(1))/$($(1)).factor
 forth_STEP_TO_PROG =   forth/$($(1)).fs
+fsharp_STEP_TO_PROG =  fsharp/$($(1)).exe
 go_STEP_TO_PROG =      go/$($(1))
 groovy_STEP_TO_PROG =  groovy/$($(1)).groovy
 java_STEP_TO_PROG =    java/src/main/java/mal/$($(1)).java
@@ -88,7 +89,6 @@ scala_STEP_TO_PROG =   scala/$($(1)).scala
 swift_STEP_TO_PROG =   swift/$($(1))
 vb_STEP_TO_PROG =      vb/$($(1)).exe
 guile_STEP_TO_PROG =   guile/$($(1)).scm
-fsharp_STEP_TO_PROG =  fsharp/$($(1)).fsx
 
 # Needed some argument munging
 COMMA = ,
@@ -106,6 +106,7 @@ cs_RUNSTEP =      mono ../$(2) --raw $(3)
 erlang_RUNSTEP =  ../$(2) $(3)
 factor_RUNSTEP =  factor ../$(2) $(3)
 forth_RUNSTEP =   gforth ../$(2) $(3)
+fsharp_RUNSTEP =  mono ../$(2) --raw $(3)
 go_RUNSTEP =      ../$(2) $(3)
 groovy_RUNSTEP =  groovy ../$(2) $(3)
 haskell_RUNSTEP = ../$(2) $(3)
@@ -133,7 +134,6 @@ swift_RUNSTEP =   ../$(2) $(3)
 vb_RUNSTEP =      mono ../$(2) --raw $(3)
 # needs TERM=dumb to work with readline
 guile_RUNSTEP =   guile -L ../guile ../$(2) $(3)
-fsharp_RUNSTEP =  fsharpi ../$(2) $(3)
 
 # Extra options to pass to runtest.py
 mal_TEST_OPTS = --start-timeout 60 --test-timeout 120

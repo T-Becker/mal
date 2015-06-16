@@ -28,6 +28,14 @@ clojure/.lein-repl-history
 erlang/ebin
 erlang/.rebar
 erlang/src/*.beam
+fsharp/mal.dll
+fsharp/step*.exe
+fsharp/*.sln
+fsharp/*.fsproj
+fsharp/*.userprefs
+fsharp/Program.fs
+fsharp/bin
+fsharp/obj
 go/step*
 go/mal
 java/target/
@@ -58,3 +66,4 @@ nim/nimcache
 .sbt
 groovy/*.class
 .crystal
+*.swp
