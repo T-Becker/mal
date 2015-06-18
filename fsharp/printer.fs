@@ -24,7 +24,7 @@ let rec pr_str_single print_readably str =
     | Integer i -> sprintf "%d" i
     | Symbol s -> sprintf "%s" s
     | Keyword k -> sprintf ":%s" k
-    | String str -> sprintf "\"%s\"" <| if print_readably then convert_str str else str
+    | String str -> sprintf "\"%s\"" <| if print_readably then str else convert_str str
     | List tokens -> tokens |> flatten "(%s)"
     | Vector tokens -> tokens |> flatten "[%s]"
     | Hash hash ->
