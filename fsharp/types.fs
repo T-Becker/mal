@@ -18,6 +18,7 @@ type Token =
     | QuasiQuote of Token list
     | Unquote of Token list
     | SpliceUnquote of Token list
+    | Dereference of Token list
 
 exception UnbalancedParenthesesError of string * bool
 exception UnmatchedParenthesesError of string

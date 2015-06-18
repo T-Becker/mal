@@ -37,6 +37,7 @@ let rec pr_str_single print_readably str =
     | QuasiQuote tokens -> tokens |> flatten "(quasiquote %s)"
     | Unquote tokens -> tokens |> flatten "(unquote %s)"
     | SpliceUnquote tokens -> tokens |> flatten "(splice-unquote %s)"
+    | Dereference tokens -> tokens |> flatten "(deref %s)"
 
 let pr_str print_readably tokens =
     [

@@ -54,6 +54,9 @@ let rec private read acc closing tokens =
     | "~@"::rest, _ ->
         let unquoted, rest = read_splice_unquote rest
         read (unquoted::acc) closing rest
+    | "@"::rest, _ ->
+        let deref, rest = read_dereference rest
+        read (deref::acc) closing rest
     | atom::rest, _ ->
         read (Atom.read_atom atom::acc) closing rest
 
@@ -85,6 +88,10 @@ and private read_unquote tokens =
 and private read_splice_unquote tokens =
     let inner, rest = read [] None tokens
     SpliceUnquote(inner), rest
+
+and private read_dereference tokens =
+    let inner, rest = read [] None tokens
+    Dereference inner, rest
 
 let read_from strl =
     match read [] None strl with
