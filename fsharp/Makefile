@@ -1,6 +1,6 @@
 DLL = mal.dll
-PATH = /Library/Frameworks/Mono.framework/Versions/4.0.1/lib/mono/4.5/fsc.exe
-CC = mono $(PATH)
+FSC = /Library/Frameworks/Mono.framework/Versions/4.0.1/lib/mono/4.5/fsc.exe
+FSHARPC = mono $(FSC)
 
 all: step0_repl step1_read_print
 
@@ -8,10 +8,14 @@ step0_repl: step0_repl.exe
 step1_read_print: step1_read_print.exe
 
 $(DLL): types.fs printer.fs atom.fs ast.fs reader.fs
-	$(CC) -a -O $+ -o $@
+	$(FSHARPC) -a -O $+ -o $@
 
 step0_repl.exe: step0_repl.fs
-	$(CC) --out:$@ $+
+	$(FSHARPC) -o $@ $+
 
 %.exe: %.fs $(DLL)
-	$(CC) -r $(DLL) $(@:%.exe=%.fs) -o $@ 
+	$(FSHARPC) -r $(DLL) $(@:%.exe=%.fs) -o $@ 
+
+clean:
+	rm -rf *.exe $(DLL) bin/ obj/
+
