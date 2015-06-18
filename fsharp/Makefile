@@ -7,7 +7,7 @@ all: step0_repl step1_read_print
 step0_repl: step0_repl.exe
 step1_read_print: step1_read_print.exe
 
-$(DLL): types.fs reader.fs printer.fs
+$(DLL): types.fs printer.fs atom.fs ast.fs reader.fs
 	$(CC) -a -O $+ --out:$@
 
 step0_repl.exe: step0_repl.fs
