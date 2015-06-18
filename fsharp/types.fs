@@ -25,3 +25,4 @@ exception UnbalancedParenthesesError of string * bool
 exception UnmatchedParenthesesError of string
 exception HashMapKeyWithoutValueError of string * string
 exception StringLiteralNotClosedError of string
+exception EmptyInputError
