@@ -12,7 +12,12 @@ let private convert_str =
     fun str ->
         quotes.Replace(newline.Replace(str, "\n"), "\"").Replace(@"\\", @"\")
 
-let rec pr_str_single print_readably = function
+let private concat : string seq -> string = Str.concat " "
+
+let rec pr_str_single print_readably str =
+    let me = pr_str_single print_readably
+    let flatten format = List.map me >> concat >> sprintf format
+    match str with
     | Nil -> "nil"
     | Boolean b -> if b then "true" else "false"
     | FloatingPoint f -> f.ToString CultureInfo.InvariantCulture
@@ -20,25 +25,21 @@ let rec pr_str_single print_readably = function
     | Symbol s -> sprintf "%s" s
     | Keyword k -> sprintf ":%s" k
     | String str -> sprintf "\"%s\"" <| if print_readably then convert_str str else str
-    | List tokens ->
-        sprintf "(%s)" <| String.Join(" ", tokens |> List.map (pr_str_single print_readably))
-    | Vector tokens ->
-        sprintf "[%s]" <| String.Join(" ", tokens |> List.map (pr_str_single print_readably))
-    | Hash h ->
-        sprintf "{%s}"
-        <| String.Join(" ", h |> Map.toSeq |> Seq.collect (fun (k, v) ->
-            [pr_str_single print_readably k; pr_str_single print_readably v]))
-    | Quote tokens ->
-        sprintf "(quote %s)" <| String.Join("", tokens |> List.map (pr_str_single print_readably))
-    | QuasiQuote tokens ->
-        sprintf "(quasiquote %s)" <| String.Join("", tokens |> List.map (pr_str_single print_readably))
-    | Unquote tokens ->
-        sprintf "(unquote %s)" <| String.Join("", tokens |> List.map (pr_str_single print_readably))
-    | SpliceUnquote tokens ->
-        sprintf "(splice-unquote %s)" <| String.Join("", tokens |> List.map (pr_str_single print_readably))
+    | List tokens -> tokens |> flatten "(%s)"
+    | Vector tokens -> tokens |> flatten "[%s]"
+    | Hash hash ->
+        hash
+        |> Map.toSeq
+        |> Seq.collect (fun (k, v) -> [me k; me v])
+        |> concat
+        |> sprintf "{%s}"
+    | Quote tokens -> tokens |> flatten "(quote %s)"
+    | QuasiQuote tokens -> tokens |> flatten "(quasiquote %s)"
+    | Unquote tokens -> tokens |> flatten "(unquote %s)"
+    | SpliceUnquote tokens -> tokens |> flatten "(splice-unquote %s)"
 
 let pr_str print_readably tokens =
-    (tokens
-    |> List.map (pr_str_single print_readably)
-    |> Str.concat " "
-    ) + "\n"
+    [
+        tokens |> List.map (pr_str_single print_readably) |> concat
+        "\n"
+    ] |> Str.concat ""

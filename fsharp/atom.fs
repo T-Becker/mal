@@ -23,10 +23,8 @@ let (|KeywordString|_|) (str:string) =
     Some str.[1..]
 
 let (|QuotedString|_|) (str:string) =
-    if str.StartsWith("\"") then
-        Some str.[1..str.Length - 2]
-    else
-        None
+    if not <| str.StartsWith("\"") then None else
+    Some str.[1..str.Length - 2]
 
 let read_atom token =
     match token with

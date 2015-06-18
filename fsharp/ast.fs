@@ -13,8 +13,7 @@ module private Parentheses =
         |> Seq.collect (fun (a, b) -> [(string a, string b); (string b, string a)])
         |> Map.ofSeq
 
-let rec private make_hash acc (_arg1:Token list) =
-    match _arg1 with
+let rec private make_hash acc = function
     | [] -> Hash(Map.ofList acc)
     | [kw] ->
         let printed = Printer.pr_str_single false kw
