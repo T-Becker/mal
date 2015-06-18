@@ -1,17 +1,21 @@
 ﻿module Ast
 
 module private Parentheses =
-    let private openingOnes = "([{"
-    let private closingOnes = ")]}"
+    let private openingOnes = "([{<"
+    let private closingOnes = ")]}>"
 
-    let private isOne (which:string) (what:string) = which.IndexOf(what) >= 0
-    let opening = isOne openingOnes
-    let closing = isOne closingOnes
+    let private inOne (haystack:string) (needle:string) =
+        if haystack.IndexOf needle >= 0 then Some needle else None
 
-    let matching =
-        Seq.zip openingOnes closingOnes
-        |> Seq.collect (fun (a, b) -> [(string a, string b); (string b, string a)])
-        |> Map.ofSeq
+    let (|Opening|_|) = inOne openingOnes
+    let (|Closing|_|) = inOne closingOnes
+
+    let (|Round|Square|Curly|Angle|None|) = function
+        | "(" -> Round ")"
+        | "[" -> Square "]"
+        | "{" -> Curly "}"
+        | "<" -> Angle ">"
+        | _ -> None
 
 let rec private make_hash acc = function
     | [] -> Hash(Map.ofList acc)
@@ -28,14 +32,14 @@ let rec private read acc closing tokens =
         let message = sprintf "Unexpected end of input, still waiting for %s." closing
         UnbalancedParenthesesError(message, true) |> raise
     | stop::rest, Some closing when stop = closing -> List.rev acc, rest
-    | stop::rest, Some closing when Parentheses.closing stop ->
+    | Parentheses.Closing stop::rest, Some closing ->
         let message =
             sprintf "Wrong kind of closing parenthesis encountered, expected %s but got %s." closing stop
         UnmatchedParenthesesError(message) |> raise
-    | stop::rest, None when Parentheses.closing stop ->
+    | Parentheses.Closing stop::rest, None ->
         let message = sprintf "Unexpected %s encountered." stop
         UnbalancedParenthesesError(message, false) |> raise
-    | opening::rest, _ when Parentheses.opening opening ->
+    | Parentheses.Opening opening::rest, _ ->
         let inner, rest = read_list opening rest
         read (inner::acc) closing rest
     | "'"::rest, _ ->
@@ -54,11 +58,16 @@ let rec private read acc closing tokens =
         read (Atom.read_atom atom::acc) closing rest
 
 and private read_list which tokens =
-    let inner, rest = read [] (Some Parentheses.matching.[which]) tokens
     match which with
-    | "(" -> List(inner), rest
-    | "[" -> Vector(inner), rest
-    | "{" -> make_hash [] inner, rest
+    | Parentheses.Round closing ->
+        let inner, rest = read [] (Some closing) tokens
+        List(inner), rest
+    | Parentheses.Square closing ->
+        let inner, rest = read [] (Some closing) tokens
+        Vector(inner), rest
+    | Parentheses.Curly closing ->
+        let inner, rest = read [] (Some closing) tokens
+        make_hash [] inner, rest
     | _ -> failwith "Unknown list type."
 
 and private read_quote tokens =
