@@ -19,6 +19,7 @@ type Token =
     | Unquote of Token list
     | SpliceUnquote of Token list
     | Dereference of Token list
+    | WithMeta of Token list * Token
 
 exception UnbalancedParenthesesError of string * bool
 exception UnmatchedParenthesesError of string

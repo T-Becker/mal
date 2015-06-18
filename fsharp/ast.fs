@@ -57,6 +57,9 @@ let rec private read acc closing tokens =
     | "@"::rest, _ ->
         let deref, rest = read_dereference rest
         read (deref::acc) closing rest
+    | "^"::rest, _ ->
+        let meta, rest = read_meta rest
+        read (meta::acc) closing rest
     | atom::rest, _ ->
         read (Atom.read_atom atom::acc) closing rest
 
@@ -92,6 +95,12 @@ and private read_splice_unquote tokens =
 and private read_dereference tokens =
     let inner, rest = read [] None tokens
     Dereference inner, rest
+
+and read_meta tokens =
+    match read [] None tokens with
+    | meta::expr, rest ->
+        WithMeta(expr, meta), rest
+    | _ -> failwith "Ast.read_meta: Should never get here."
 
 let read_from strl =
     match read [] None strl with

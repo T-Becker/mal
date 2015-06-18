@@ -38,6 +38,8 @@ let rec pr_str_single print_readably str =
     | Unquote tokens -> tokens |> flatten "(unquote %s)"
     | SpliceUnquote tokens -> tokens |> flatten "(splice-unquote %s)"
     | Dereference tokens -> tokens |> flatten "(deref %s)"
+    | WithMeta(tokens, meta) ->
+        sprintf "(with-meta %s %s)" (tokens |> List.map me |> concat) (me meta)
 
 let pr_str print_readably tokens =
     [
